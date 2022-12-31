@@ -62,33 +62,35 @@
     const brLines = article.innerHTML.split(/<br\s*[\/]?>/gi)
     brLines.forEach(line => {
         try {
-            const testdecoded = atob(filterBase64Chars(line))
+            const filtered = filterBase64Chars(line)
+            const testdecoded = atob(filtered)
             const strike = line.includes("<s>");
             if (testdecoded) {
                 const fullydecoded = decodeBase64Recursively(testdecoded)
                 if (!fullydecoded.startsWith("http")) return
                 const id = uuidv4()
                 const html = `<a href=${fullydecoded} target="_blank">${(strike?"<s>":"")+fullydecoded+(strike?"</s>":"")}</a> (decoded from base64) `
-                article.innerHTML = article.innerHTML.replace(line, `<p id=${'symyabase64-' + id}></p>`)
-                document.getElementById('symyabase64-' + id).innerHTML = html;
+                article.innerHTML = article.innerHTML.replace(filtered, `<p id=${'symyabase64-' + id}></p>`)
+                const tag = document.getElementById('symyabase64-' + id)
+                tag.innerHTML = html;
                 // add revert button
                 const revertButton = document.createElement("a")
                 revertButton.href = "javascript:void(0)"
                 revertButton.innerHTML = "Revert"
                 function undo() {
-                    document.getElementById('symyabase64-' + id).innerHTML = line + " "
+                    tag.innerHTML = line + " "
                     revertButton.innerHTML = "Decode"
                     revertButton.onclick = redo;
-                    document.getElementById('symyabase64-' + id).appendChild(revertButton)
+                    tag.appendChild(revertButton)
                 }
                 function redo() {
-                    document.getElementById('symyabase64-' + id).innerHTML = html;
+                    tag.innerHTML = html;
                     revertButton.innerHTML = "Revert"
                     revertButton.onclick = undo;
-                    document.getElementById('symyabase64-' + id).appendChild(revertButton)
+                    tag.appendChild(revertButton)
                 }
                 revertButton.onclick = undo;
-                document.getElementById('symyabase64-' + id).appendChild(revertButton)
+                tag.appendChild(revertButton)
 
 
 
