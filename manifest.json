@@ -11,7 +11,16 @@
         "js": ["contentscript.js"],
         "run_at": "document_end",
         "all_frames": true
+      },
+      {
+        "matches": ["https://kioskloud.io/e/**"],
+        "js": ["kioskautopw.js"],
+        "run_at": "document_end",
+        "all_frames": true
       }
+    ],
+    "permissions": [
+      "storage"
     ]
   }
   
