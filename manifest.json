@@ -13,8 +13,8 @@
         "all_frames": true
       },
       {
-        "matches": ["https://kioskloud.io/e/**"],
-        "js": ["kioskautopw.js"],
+        "matches": ["https://kioskloud.io/e/**", "https://mega.nz/**"],
+        "js": ["autopw.js"],
         "run_at": "document_end",
         "all_frames": true
       }
