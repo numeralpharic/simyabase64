@@ -1,5 +1,7 @@
 (function () {
   function mega(pw) {
+    if(!window.location.href.includes("#P!")) return;
+    console.log("Waiting for password input...");
     const interval = setInterval(() => {
       const pwInput = document.querySelector("#password-decrypt-input");
       const pwConfirm = document.querySelector("button.decrypt-link-button");
