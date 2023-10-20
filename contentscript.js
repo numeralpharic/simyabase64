@@ -21,9 +21,17 @@
       return base64;
     }
   }
-  function savepw(key, value) {
-    chrome.storage.sync.set({ [key]: value }, function () {
-      console.log("saved pw: " + value + " for " + key);
+  function savepw(url, pw) {
+    // exclude domain, take only path
+    const path = url.match(/https?:\/\/.+?(\/.+)$/)[1];
+    chrome.storage.local.set({ [path]: pw }, function () {
+      console.log("saved pw: " + pw + " for " + path);
+    });
+    // remove on beforeunload
+    window.addEventListener("beforeunload", function () {
+      chrome.storage.local.remove([path], function () {
+        console.log("removed pw for " + path);
+      });
     });
   }
   const article = document.querySelector(
@@ -34,11 +42,10 @@
   const pLines = article.querySelectorAll("p");
   
   // find "ㄱㄹ" or "국룰" from article, get token including it, and substitute it with "smpeople". e.g.: #국룰# -> #smpeople#, 123국룰123 -> 123smpeople123
-  const token = article.innerText.match(/([^ \-\n\(\)\[\]:]*(?:ㄱㄹ|국룰)[^ \-\n\[\]\(\)]*)/g);
+  const token = article.innerText.match(/([^ \-\n\(\)\[\]:]*(?:ㄱ.+?ㄹ|국.+?룰)[^ \-\n\[\]\(\)]*)/g);
   if (token) {
     autopw = token[0];
-    autopw = autopw.replace(/ㄱㄹ|국룰/g, "smpeople").replace(/\+/g,"");
-    console.log(autopw);
+    autopw = autopw.replace(/ㄱ.+?ㄹ|국.+?룰/g, "smpeople").replace(/\+/g,"");
   }
 
   pLines.forEach((line) => {
@@ -77,7 +84,7 @@
         line.appendChild(revertButton);
       }
     } catch (e) {
-      console.log(e);
+      
     }
   });
 
@@ -121,7 +128,7 @@
         tag.appendChild(revertButton);
       }
     } catch (e) {
-      console.log(e);
+      
     }
   });
 
@@ -131,7 +138,6 @@
       const filtered = filterBase64Chars(unknown);
       const testdecoded = atob(filtered);
       if (testdecoded) {
-        console.log(unknown);
         const fullydecoded = decodeBase64Recursively(testdecoded);
         if (!fullydecoded.startsWith("http")) return;
         savepw(fullydecoded, autopw);
@@ -187,7 +193,7 @@
         }
       }
     } catch (e) {
-      console.log(e);
+      
     }
   });
 })();

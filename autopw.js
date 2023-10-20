@@ -1,4 +1,5 @@
 (function () {
+  console.log("AutoPW is running...");
   function mega(pw) {
     if(!window.location.href.includes("#P!")) return;
     console.log("Waiting for password input...");
@@ -29,8 +30,12 @@
 
   // get pw from chrome storage
   let pw = "";
-  chrome.storage.sync.get([window.location.href], function (result) {
-    pw = result[window.location.href];
+  const path = window.location.href.match(/https?:\/\/.+?(\/.+)$/)[1];
+  chrome.storage.local.get([path], function (result) {
+    
+    pw = result[path];
+    console.log("pw: " + pw);
+
     if (pw) {
       const domain = window.location.href.match(/https?:\/\/(.+?)\//)[1];
       switch (domain) {
