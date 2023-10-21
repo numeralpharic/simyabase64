@@ -45,7 +45,7 @@
   const token = article.innerText.match(/([^ \-\n\(\)\[\]:]*(?:ㄱ.*?ㄹ|국.*?룰)[^ \-\n\[\]\(\)]*)/g);
   if (token) {
     autopw = token[0];
-    autopw = autopw.replace(/ㄱ.+?ㄹ|국.+?룰/g, "smpeople").replace(/\+/g,"");
+    autopw = autopw.replace(/ㄱ.*?ㄹ|국.*?룰/g, "smpeople").replace(/\+/g,"");
   }
 
   pLines.forEach((line) => {
