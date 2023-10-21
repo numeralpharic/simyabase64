@@ -42,7 +42,7 @@
   const pLines = article.querySelectorAll("p");
   
   // find "ㄱㄹ" or "국룰" from article, get token including it, and substitute it with "smpeople". e.g.: #국룰# -> #smpeople#, 123국룰123 -> 123smpeople123
-  const token = article.innerText.match(/([^ \-\n\(\)\[\]:]*(?:ㄱ.+?ㄹ|국.+?룰)[^ \-\n\[\]\(\)]*)/g);
+  const token = article.innerText.match(/([^ \-\n\(\)\[\]:]*(?:ㄱ.*?ㄹ|국.*?룰)[^ \-\n\[\]\(\)]*)/g);
   if (token) {
     autopw = token[0];
     autopw = autopw.replace(/ㄱ.+?ㄹ|국.+?룰/g, "smpeople").replace(/\+/g,"");
