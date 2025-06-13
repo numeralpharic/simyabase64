@@ -27,7 +27,39 @@
       pwInput.focus();
     }, 500);
   }
+  async function kioac(pw) {
+    console.log("Waiting for password input...");
 
+    let pwInput = document.querySelector("input");
+    // poll pwinput
+    await new Promise(resolve =>{
+      const interval = setInterval(() => {
+        pwInput = document.querySelector("input");
+        if (pwInput) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+    console.log("Found password input");
+    const pwConfirm = document.querySelector("button[data-submit='true']");
+    if (!pwInput || !pwConfirm) return;
+    pwInput.value = pw;
+    pwInput.dispatchEvent(new Event("input", { bubbles: true }));
+    // wait for event to be processed
+    await new Promise(resolve => {
+      const interval = setInterval(() => {
+        if (pwInput.value === pw) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+    pwConfirm.click();
+    setTimeout(() => {
+      pwInput.focus();
+    }, 500);
+  }
   // get pw from chrome storage
   let pw = "";
   const path = window.location.href.match(/https?:\/\/.+?(\/.+)$/)[1];
@@ -44,6 +76,9 @@
           break;
         case "kioskloud.io":
           kiosk(pw);
+          break;
+        case "kio.ac":
+          kioac(pw);
           break;
         default:
           break;

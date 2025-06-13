@@ -7,13 +7,13 @@
   
     "content_scripts": [
       {
-        "matches": ["https://arca.live/b/simya/**"],
+        "matches": ["https://arca.live/b/404notfound/**", "https://kone.gg/s/somisoft/**"],
         "js": ["contentscript.js"],
         "run_at": "document_end",
         "all_frames": true
       },
       {
-        "matches": ["https://kioskloud.io/e/**", "https://mega.nz/**"],
+        "matches": ["https://kioskloud.io/e/**", "https://mega.nz/**", "https://kio.ac/**"],
         "js": ["autopw.js"],
         "run_at": "document_end",
         "all_frames": true

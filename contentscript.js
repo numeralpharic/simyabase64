@@ -1,4 +1,4 @@
-(function () {
+(async function () {
   function uuidv4() {
     return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
       (
@@ -34,18 +34,33 @@
       });
     });
   }
-  const article = document.querySelector(
-    "div.article-body > div.article-content"
-  );
+
+  function waitForShadowRoot() {
+    return new Promise((resolve) => {
+      const checkShadowRoot = () => {
+        const postContent = document.querySelector("#post_content");
+        if (postContent && postContent.shadowRoot) {
+          resolve(postContent.shadowRoot.querySelector("div"));
+        } else {
+          setTimeout(checkShadowRoot, 100); // Check again in 100ms
+        }
+      };
+      checkShadowRoot();
+    });
+  }
+
+
+  const article = document.location.href.includes("arca.live") ? document.querySelector("div.article-body > div.article-content") : await waitForShadowRoot();
+  console.log(article);
   if (!article) return;
-  let autopw = "smpeople";
+  let autopw = "somisoft";
   const pLines = article.querySelectorAll("p");
   
-  // find "ㄱㄹ" or "국룰" from article, get token including it, and substitute it with "smpeople". e.g.: #국룰# -> #smpeople#, 123국룰123 -> 123smpeople123
+  // find "ㄱㄹ" or "국룰" from article, get token including it, and substitute it with "somisoft". e.g.: #국룰# -> #somisoft#, 123국룰123 -> 123somisoft123
   const token = article.innerText.match(/([^ \-\n\(\)\[\]:]*(?:ㄱ.*?ㄹ|국.*?룰)[^ \-\n\[\]\(\)]*)/g);
   if (token) {
     autopw = token[0];
-    autopw = autopw.replace(/ㄱ.*?ㄹ|국.*?룰/g, "smpeople").replace(/\+/g,"");
+    autopw = autopw.replace(/ㄱ.*?ㄹ|국.*?룰/g, "somisoft").replace(/\+/g,"");
   }
 
   pLines.forEach((line) => {
@@ -59,6 +74,7 @@
         const fullydecoded = decodeBase64Recursively(testdecoded);
         if (!fullydecoded.startsWith("http")) return;
         savepw(fullydecoded, autopw);
+        console.log(fullydecoded);
         const html = `<a href=${fullydecoded} target="_blank">${
           (strike ? "<s>" : "") + fullydecoded + (strike ? "</s>" : "")
         }</a> (decoded from base64) `;
