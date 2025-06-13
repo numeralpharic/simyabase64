@@ -7,7 +7,7 @@
   
     "content_scripts": [
       {
-        "matches": ["https://arca.live/b/404notfound/**", "https://kone.gg/s/somisoft/**"],
+        "matches": ["https://arca.live/b/404notfound/**", "https://kone.gg/s/somisoft**"],
         "js": ["contentscript.js"],
         "run_at": "document_end",
         "all_frames": true
