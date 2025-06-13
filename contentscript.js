@@ -1,21 +1,26 @@
 
 console.log("contentscript.js loaded");
-function tryGenerateRJLink(pTag){
-  const upper = pTag.textContent.toUpperCase();
+function insertAfter(newNode, referenceNode) {
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+function tryGenerateRJLink(target, genData){
+  const upper = target.textContent.toUpperCase();
   console.log(upper);
   // match RJXXXXXX or 거XXXXXX (digits doesn't matter)
   const match = upper.match(/RJ(\d+)|거(\d+)/);
   console.log(match);
-  if (!match) return pTag;
+  if (!match) return;
   const rjcode = match[1] || match[2];
   const urlBase = `https://www.dlsite.com/maniax/work/=/product_id/RJ${rjcode}.html`
   // append href to pTag
   const a = document.createElement("a");
-  pTag.appendChild(a);
+  if(!genData)
+    target.appendChild(a);
+  else
+    genData.push({node: target, a: a});
   a.href = urlBase;
   a.target = "_blank";
   a.innerText = "(link)";
-  return pTag;
 }
 function uuidv4() {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
@@ -170,10 +175,16 @@ async function main(){
     }
   });
 
-  const unknowns = article.innerText.split(/\s+/);
-  unknowns.forEach((unknown) => {
+  const unknowns = article.childNodes;
+  const genData = [];
+  unknowns.forEach((node, idx) => {
+    // skip p / br
+    if (node.tagName === "P" || node.tagName === "BR") return;
     try {
-      const filtered = filterBase64Chars(unknown);
+      console.log(node, "unknown");
+      tryGenerateRJLink(node, genData);
+      const filtered = filterBase64Chars(node.textContent);
+      
       const testdecoded = atob(filtered);
       if (testdecoded) {
         const fullydecoded = decodeBase64Recursively(testdecoded);
@@ -193,7 +204,7 @@ async function main(){
           revertButton.href = "javascript:void(0)";
           revertButton.innerHTML = "Revert";
           function undo() {
-            tag.innerHTML = unknown + " ";
+            tag.innerHTML = node.textContent + " ";
             revertButton.innerHTML = "Decode";
             revertButton.onclick = redo;
             tag.appendChild(revertButton);
@@ -215,7 +226,7 @@ async function main(){
           revertButton.href = "javascript:void(0)";
           revertButton.innerHTML = "Revert";
           function undo() {
-            tag.innerHTML = unknown + " ";
+            tag.innerHTML = node.textContent + " ";
             revertButton.innerHTML = "Decode";
             revertButton.onclick = redo;
             tag.appendChild(revertButton);
@@ -233,6 +244,9 @@ async function main(){
     } catch (e) {
       
     }
+  });
+  genData.forEach(({node, a}) => {
+    insertAfter(a, node);
   });
 }
 main()
